@@ -1,13 +1,13 @@
 # ValheimBackupy
-Python script to backup your worlds from the dedicated cloud gaming servers g-portal.com. Utilizes a cronjob to backup yout files at a specified tame every day.
+Python script to backup your worlds from the dedicated cloud gaming servers g-portal.com. Utilizes a cronjob to backup your files at a specified tame every day.
 
 ## Install
-- Visit {github url}
+- Visit https://github.com/techb/ValheimBackupy
 - Download code as zip
 - Extract the folder
 
 #### Command line
-- `$ git clone {github url}`
+- `$ git clone git@github.com:techb/ValheimBackupy.git`
 - `$ cd ValheimBackupy`
 
 ## Config
