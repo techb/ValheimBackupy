@@ -1,5 +1,5 @@
 # ValheimBackupy
-Python script to backup your worlds from the dedicated cloud gaming servers g-portal.com. Utilizes a cronjob to backup your files at a specified tame every day.
+Python script to backup your worlds from the dedicated cloud gaming servers g-portal.com. Utilizes a cronjob to backup your files at a specified time every day.
 
 ## Install
 - Visit https://github.com/techb/ValheimBackupy
@@ -14,6 +14,8 @@ Python script to backup your worlds from the dedicated cloud gaming servers g-po
 - Create a new file in `ValheimBackupy/` called `config.ini`
 - Copy the contents of `example.config.ini` into the new `config.ini` file
 - Replace the information obtained from your g-portal.com account
+  - Log into g-portal and select your Velheim server, the information you need will look similar to this:
+  ![g-portal](/img/g-portal.png)
 - Save the file
 #### Command line
 - `$ cp example.config.ini config.ini`
@@ -26,4 +28,5 @@ Python script to backup your worlds from the dedicated cloud gaming servers g-po
 - `$ crontab -e`
   - Create cron job
   - `20 4 * * * /<Path To Script>/valheimbacku.py`
-  - {image of crontab -e}
+
+![crontab](/img/crontab.png)
