@@ -1,7 +1,28 @@
 #!/usr/bin/env python3
 
-from ftplib import FTP
-import configparser
+from ftplib import FTP, all_errors
+import configparser, sys, os
+
+
+# function to handle possible errors I've been able to produce
+def handleErrors(e, world=None):
+    if e.__class__.__name__ == "TimeoutError":
+        print("Timed out, check your host and port in config.ini")
+        sys.exit()
+
+    elif e.__class__.__name__ == "gaierror":
+        print("Socket error, host address is wrong in config.ini")
+        sys.exit()
+
+    else:
+        err = str(e).split(None, 1)[0]
+        if err == "530":
+            print('Login Failed')
+            sys.exit()
+
+        if err == "550":
+            print(f"World not found: {world}")
+            return world
 
 
 # get the config info from the ini file
@@ -12,28 +33,50 @@ pwd = config['login']['pwd']
 host = config['server']['host']
 port = int(config['server']['port']) # must be an int
 
-# get the list of worlds and strip any whitespace
+# file extensions/types to download
+ext = [".db", ".fwl", ".fwl.old"]
+# list of files to delete if the world isn't found
+deleteme = []
+
+
+# get the list of worlds and strip any whitespace remove duplicates and empty elements
 worlds = config['worlds']['world'].split(',')
 for i in range(0, len(worlds)):
     worlds[i] = worlds[i].strip()
+worlds = set(filter(None, worlds))
 
-# setup the FTP connection and switch to the worlds dir
+
+# setup the FTP connection
 ftp = FTP()
-ftp.connect(host, port)
-ftp.login(usr, pwd)
-ftp.cwd('.config/unity3d/IronGate/Valheim/worlds')
+try:
+    ftp.connect(host, port)
+except Exception as e:
+    handleErrors(e)
+try:
+    ftp.login(usr, pwd)
+except all_errors as e:
+    handleErrors(e)
 
+
+# switch to the worlds dir
+ftp.cwd('.config/unity3d/IronGate/Valheim/worlds')
 # loop through the worlds and download a backup file
 for filename in worlds:
-    with open('backups/'+filename+'.db', 'wb') as fp:
-        ftp.retrbinary('RETR '+filename+'.db', fp.write)
+    for xt in ext:
+        with open(f"backups/{filename}{xt}", "wb") as fp:
+            try:
+                ftp.retrbinary(f"RETR {filename}{xt}", fp.write)
+            except all_errors as e:
+                d = handleErrors(e, filename+xt)
+                if d:
+                    deleteme.append(d)
 
-    with open('backups/'+filename+'.fwl', 'wb') as fp:
-        ftp.retrbinary('RETR '+filename+'.fwl', fp.write)
 
-    # Might get errors with a fresh server, haven't tested
-    with open('backups/'+filename+'.fwl.old', 'wb') as fp:
-        ftp.retrbinary('RETR '+filename+'.fwl.old', fp.write)
+# remove the worlds that were not found from the local backup folder
+if len(deleteme) > 0:
+    for f in deleteme:
+        os.remove(f"backups/{f}")
+
 
 # end
 ftp.quit()
