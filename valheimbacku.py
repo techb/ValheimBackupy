@@ -6,6 +6,7 @@ import configparser, sys, os
 
 # function to handle possible errors I've been able to produce
 def handleErrors(e, world=None):
+    # Lower level network errors
     if e.__class__.__name__ == "TimeoutError":
         print("Timed out, check your host and port in config.ini")
         sys.exit()
@@ -14,6 +15,7 @@ def handleErrors(e, world=None):
         print("Socket error, host address is wrong in config.ini")
         sys.exit()
 
+    # it's an error with the ftp then
     else:
         err = str(e).split(None, 1)[0]
         if err == "530":
@@ -66,6 +68,7 @@ for filename in worlds:
         with open(f"backups/{filename}{xt}", "wb") as fp:
             try:
                 ftp.retrbinary(f"RETR {filename}{xt}", fp.write)
+                print(f"Received {filename}{xt}")
             except all_errors as e:
                 d = handleErrors(e, filename+xt)
                 if d:
