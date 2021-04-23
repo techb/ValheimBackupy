@@ -29,4 +29,4 @@ Python script to backup your worlds from the dedicated cloud gaming servers g-po
   - Create cron job
   - `20 4 * * * /<Path To Script>/valheimbacku.py`
 
-![crontab](/img/crontab.png)
+![crontab](/img/crontab.png#1)
