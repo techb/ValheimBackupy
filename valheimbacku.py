@@ -50,6 +50,10 @@ worlds = set(filter(None, worlds))
 # os path to the backups folder, needed since crons run in a different working dir
 worlds_path = os.path.join(os.path.dirname(__file__), 'backups/')
 
+# check if the backups dir exists, if not then create it
+if not os.path.exists(worlds_path):
+    os.makedirs('backups')
+
 
 # setup the FTP connection
 ftp = FTP()
