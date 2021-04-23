@@ -27,9 +27,10 @@ def handleErrors(e, world=None):
             return world
 
 
-# get the config info from the ini file
+# get the config info from the ini file, using os.path since crons run in a different working dir
 config = configparser.ConfigParser()
-config.read(r'config.ini')
+config_file = os.path.join(os.path.dirname(__file__), 'config.ini')
+config.read(config_file)
 usr = config['login']['usr']
 pwd = config['login']['pwd']
 host = config['server']['host']
@@ -46,6 +47,8 @@ worlds = config['worlds']['world'].split(',')
 for i in range(0, len(worlds)):
     worlds[i] = worlds[i].strip()
 worlds = set(filter(None, worlds))
+# os path to the backups folder, needed since crons run in a different working dir
+worlds_path = os.path.join(os.path.dirname(__file__), 'backups/')
 
 
 # setup the FTP connection
@@ -65,7 +68,7 @@ ftp.cwd('.config/unity3d/IronGate/Valheim/worlds')
 # loop through the worlds and download a backup file
 for filename in worlds:
     for xt in ext:
-        with open(f"backups/{filename}{xt}", "wb") as fp:
+        with open(f"{worlds_path}{filename}{xt}", "wb") as fp:
             try:
                 ftp.retrbinary(f"RETR {filename}{xt}", fp.write)
                 print(f"Received {filename}{xt}")
